@@ -16,6 +16,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: write
     uses: tuxcrate/github-actions/.github/workflows/container.yml@main
     with:
       website-repository: tuxcrate/website
