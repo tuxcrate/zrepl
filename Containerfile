@@ -2,14 +2,11 @@ ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
 ARG APP_VERSION
-ARG UPSTREAM_VERSION
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN set -eux; \
     : "${APP_VERSION:?APP_VERSION must be set}"; \
-    : "${UPSTREAM_VERSION:?UPSTREAM_VERSION must be set}"; \
-    test "${UPSTREAM_VERSION%-*}" = "${APP_VERSION}"; \
     export DEBIAN_FRONTEND=noninteractive; \
     apt-get update; \
     apt-get upgrade --yes --no-install-recommends; \
@@ -30,8 +27,8 @@ RUN set -eux; \
         > /etc/apt/preferences.d/90_zfs; \
     apt-get update; \
     apt-get install --yes --no-install-recommends \
-        "zrepl=${UPSTREAM_VERSION}" zfsutils-linux; \
-    test "$(dpkg-query --show --showformat='${Version}' zrepl)" = "${UPSTREAM_VERSION}"; \
+        "zrepl=${APP_VERSION}" zfsutils-linux; \
+    test "$(dpkg-query --show --showformat='${Version}' zrepl)" = "${APP_VERSION}"; \
     install -d -m 0700 /var/run/zrepl; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*; \
