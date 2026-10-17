@@ -1,5 +1,6 @@
 # zrepl
 
-[zrepl](https://zrepl.github.io/) container image published as `ghcr.io/tuxcrate/zrepl`.
+zrepl is a ZFS replication tool.
+This image includes the zrepl daemon and Debian ZFS userland utilities.
 
-[Documentation](https://github.com/tuxcrate/website/blob/main/docs/image/zrepl.md)
+[Documentation](https://tuxcrate.com/containers/zrepl/)
