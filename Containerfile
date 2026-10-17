@@ -1,9 +1,6 @@
-# Intentionally no fallback pin: meta.yaml is the single source of truth.
-# Required; the shared workflow supplies the track's pinned reference from meta.yaml.
 ARG BASE_IMAGE
 FROM ${BASE_IMAGE}
 
-# Required, supplied by the shared workflow or --build-arg for local builds.
 ARG APP_VERSION
 ARG UPSTREAM_VERSION
 
