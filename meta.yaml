@@ -6,6 +6,7 @@ tracks:
       depName: zrepl
       registryUrl: "https://zrepl.cschwarz.com/apt/debian?suite=trixie&components=main&binaryArch=amd64"
       version: "0.7.0-1"
-    aliases: 
-      - "{major}.{minor}"
+    tags:
+      - "${version}"
+      - "${major}.${minor}"
       - latest
