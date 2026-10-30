@@ -1,0 +1,2 @@
+# Exercise daemon startup without accessing ZFS or requiring a host kernel module.
+jobs: []
