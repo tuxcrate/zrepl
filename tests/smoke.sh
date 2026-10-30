@@ -44,10 +44,13 @@ while :; do
     sleep 1
 done
 
-phase='checking the installed package version'
+phase='checking the installed upstream version'
 installed_version=$(docker exec "$container" dpkg-query --show --showformat='${Version}' zrepl)
-if [[ $installed_version != "$version" ]]; then
-    printf 'Expected zrepl package %s, got %s.\n' "$version" "$installed_version" >&2
+# CI currently supplies the upstream version rather than the full Debian pin.
+# The Containerfile separately asserts the exact package revision.
+expected_version=${version%-*}
+if [[ ${installed_version%-*} != "$expected_version" ]]; then
+    printf 'Expected zrepl upstream version %s, got package %s.\n' "$expected_version" "$installed_version" >&2
     exit 1
 fi
 
