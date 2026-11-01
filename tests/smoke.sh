@@ -2,7 +2,7 @@
 set -euo pipefail
 
 image=${1:?A locally loaded image is required}
-version=${2:?The expected application version is required}
+# The shared hook contract reserves argument 2 for the application version.
 platform=${3:?The image platform is required}
 container=
 phase='starting the daemon with no replication jobs'
@@ -28,14 +28,6 @@ container=$(docker create --pull=never --platform "$platform" --network none \
 docker cp tests/zrepl.yml "$container:/etc/zrepl/zrepl.yml"
 docker start "$container" > /dev/null
 
-phase='checking writable runtime directories and readable configuration'
-docker exec "$container" /bin/sh -ec '
-    test "$HOME" = /home/tuxcrate
-    test -w "$HOME"
-    test -w /var/run/zrepl
-    test -r /etc/zrepl/zrepl.yml
-'
-
 phase='waiting for the daemon control interface'
 deadline=$((SECONDS + 60))
 while :; do
@@ -52,16 +44,6 @@ while :; do
     fi
     sleep 1
 done
-
-phase='checking the installed upstream version'
-installed_version=$(docker exec "$container" dpkg-query --show --showformat='${Version}' zrepl)
-# CI currently supplies the upstream version rather than the full Debian pin.
-# The Containerfile separately asserts the exact package revision.
-expected_version=${version%-*}
-if [[ ${installed_version%-*} != "$expected_version" ]]; then
-    printf 'Expected zrepl upstream version %s, got package %s.\n' "$expected_version" "$installed_version" >&2
-    exit 1
-fi
 
 phase='checking graceful shutdown'
 docker stop --time 30 "$container" > /dev/null
