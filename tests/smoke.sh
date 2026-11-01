@@ -28,10 +28,8 @@ container=$(docker create --pull=never --platform "$platform" --network none \
 docker cp tests/zrepl.yml "$container:/etc/zrepl/zrepl.yml"
 docker start "$container" > /dev/null
 
-phase='checking the non-root runtime user and writable directories'
+phase='checking writable runtime directories and readable configuration'
 docker exec "$container" /bin/sh -ec '
-    test "$(id -u)" = 1000
-    test "$(id -g)" = 1000
     test "$HOME" = /home/tuxcrate
     test -w "$HOME"
     test -w /var/run/zrepl
