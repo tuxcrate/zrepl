@@ -23,9 +23,20 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 container=$(docker create --pull=never --platform "$platform" --network none \
+    --cap-drop ALL --security-opt no-new-privileges=true \
     --label "com.tuxcrate.smoke-test=${TUXCRATE_TEST_ID:-manual-zrepl-$$}" "$image")
 docker cp tests/zrepl.yml "$container:/etc/zrepl/zrepl.yml"
 docker start "$container" > /dev/null
+
+phase='checking the non-root runtime user and writable directories'
+docker exec "$container" /bin/sh -ec '
+    test "$(id -u)" = 1000
+    test "$(id -g)" = 1000
+    test "$HOME" = /home/tuxcrate
+    test -w "$HOME"
+    test -w /var/run/zrepl
+    test -r /etc/zrepl/zrepl.yml
+'
 
 phase='waiting for the daemon control interface'
 deadline=$((SECONDS + 60))
