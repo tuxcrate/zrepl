@@ -3,8 +3,7 @@ FROM ${BASE_IMAGE}
 
 ARG APP_VERSION
 
-# ZFS administration requires root access to the host's ZFS devices.
-LABEL com.tuxcrate.runtime-user="root"
+ENV HOME=/home/tuxcrate
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -32,7 +31,9 @@ RUN set -eux; \
     apt-get install --yes --no-install-recommends \
         "zrepl=${APP_VERSION}" zfsutils-linux; \
     test "$(dpkg-query --show --showformat='${Version}' zrepl)" = "${APP_VERSION}"; \
-    install -d -m 0700 /var/run/zrepl; \
+    groupadd --gid 1000 tuxcrate; \
+    useradd --uid 1000 --gid 1000 --create-home --home-dir /home/tuxcrate --shell /usr/sbin/nologin tuxcrate; \
+    install -d -m 0700 -o 1000 -g 1000 /var/run/zrepl; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*; \
     zrepl version --show client; \
@@ -40,6 +41,7 @@ RUN set -eux; \
     zfs --help; \
     zpool --help
 
+USER 1000:1000
 WORKDIR /etc/zrepl
 
 ENTRYPOINT ["/usr/bin/zrepl", "--config", "/etc/zrepl/zrepl.yml"]
