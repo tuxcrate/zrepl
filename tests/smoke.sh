@@ -23,7 +23,7 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 container=$(docker create --pull=never --platform "$platform" --network none \
-    --label "io.tuxcrate.smoke-test=${TUXCRATE_TEST_ID:-manual-zrepl-$$}" "$image")
+    --label "com.tuxcrate.smoke-test=${TUXCRATE_TEST_ID:-manual-zrepl-$$}" "$image")
 docker cp tests/zrepl.yml "$container:/etc/zrepl/zrepl.yml"
 docker start "$container" > /dev/null
 

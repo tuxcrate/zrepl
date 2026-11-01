@@ -3,6 +3,9 @@ FROM ${BASE_IMAGE}
 
 ARG APP_VERSION
 
+# ZFS administration requires root access to the host's ZFS devices.
+LABEL com.tuxcrate.runtime-user="root"
+
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 RUN set -eux; \
